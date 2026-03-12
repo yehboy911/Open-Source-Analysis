@@ -32,7 +32,7 @@ Phase 2 begins only after Section 1 is confirmed written to disk.
 1. For each direct dependency in Section 1, resolve its own dependency tree.
 2. Deduplicate by package name + version.
 3. Flag any transitive dependency whose license may be incompatible with the project's license policy.
-4. Append all findings to Section 2 of `audit-evidence.md`.
+4. Append all findings to Section 2 of `audit-evidence.md`. Confirm the write by reading back the file before proceeding to Phase 3.
 
 ## Phase 3 — Tool-Assisted Analysis (Optional)
 
@@ -91,7 +91,6 @@ Pass through any additional flags from the orchestrator:
 - `--config-h <path>` if provided
 - `--sbom <csv>` if provided (repeatable)
 - `--exclude <dir>` if provided (repeatable)
-- `--output osc-evidence-report.md` to capture the standalone report
 
 Write the 15-checkpoint summary table to **Section 6** of `audit-evidence.md`. Include the verdict for each checkpoint and flag any FAIL or MANUAL items.
 

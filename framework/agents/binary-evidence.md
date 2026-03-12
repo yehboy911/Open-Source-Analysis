@@ -36,10 +36,12 @@ Record the exact command invoked and the exact output (`MATCH_FOUND: ...` or `NO
 
 ### 3. Build Script Inspection
 
-Read `build_ux.py` (or equivalent build scripts) to determine:
+Search for build scripts in the project root (e.g., `build*.py`, `build*.sh`, `CMakeLists.txt`, `Makefile`, `package.json` scripts). Read any found to determine:
 - Whether `node_modules` are tree-shaken before packaging
 - Whether JavaScript assets are bundled into `.asar` files
 - Whether any native addons are compiled and statically linked
+
+If no build script is found, note this in Section 3 and proceed.
 
 ### 4. Linkage Classification
 

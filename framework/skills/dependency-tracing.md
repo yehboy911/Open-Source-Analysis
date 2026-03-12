@@ -33,13 +33,13 @@ Phase 2 begins only after Phase 1 data exists in `audit-evidence.md`.
 **Phase 1 entry in `audit-evidence.md`:**
 ```
 ## Direct Dependencies
-- openssl 3.0.2 | License: Apache-2.0 | Declared in: CMakeLists.txt:42
-- zlib 1.2.11   | License: zlib      | Declared in: CMakeLists.txt:67
+- openssl 3.0.2 | License: Apache-2.0 | Source: CMakeLists.txt:42
+- zlib 1.2.11   | License: zlib      | Source: CMakeLists.txt:67
 ```
 
 **Phase 2 entry in `audit-evidence.md`:**
 ```
 ## Transitive Dependencies
-- openssl → c-ares 1.19.0 | License: MIT
-- openssl → perl 5.36.0   | License: GPL-1.0-or-later ⚠️ FLAG FOR REVIEW
+- openssl → c-ares 1.19.0 | License: MIT     | Source: $ npm ls c-ares → c-ares@1.19.0
+- openssl → perl 5.36.0   | License: GPL-1.0-or-later | Source: CMakeLists.txt:89 ⚠️ FLAG FOR REVIEW
 ```

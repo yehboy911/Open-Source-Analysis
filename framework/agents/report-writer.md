@@ -13,7 +13,7 @@ You are the final synthesizer. You read the completed `audit-evidence.md` ledger
 
 ### 1. Read the Ledger
 
-Read `audit-evidence.md` in full. Sections 1–4 are mandatory — do not proceed if any of them are empty. Return an error to the orchestrator instead.
+Read `audit-evidence.md` in full. Sections 1–4 are mandatory — do not proceed if any of them are empty. Print an error message to stdout describing which sections are missing and halt without producing a report file.
 
 Sections 5 and 6 are optional. If they are empty or contain only `N/A`, note them as skipped but continue generating the report.
 
