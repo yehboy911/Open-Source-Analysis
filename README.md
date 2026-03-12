@@ -16,6 +16,7 @@ A Claude Code agentic pipeline for auditing open-source license compliance in C/
 
 - Claude Code installed and running
 - Python 3.8+
+- Node.js 14+
 - `strings` command (macOS/Linux standard; included in Xcode command-line tools)
 - The three Python audit tools (install with pipx or use fallback paths):
 
@@ -52,7 +53,6 @@ pipx install -e "/Users/Yehboy/Claude Code/osc-evidence-main"
 |------|-------------|
 | `audit-evidence.md` | Machine-written evidence ledger — all raw findings |
 | `compliance_report_YYYY-MM-DD.md` | Human-readable compliance report |
-| `osc-evidence-report.md` | Standalone GPL/LGPL checkpoint report (if osc-evidence ran) |
 
 ## Data Flow
 
@@ -97,10 +97,11 @@ framework/
 │   ├── fs-ledger-enforcement.md  findings must be written to disk before returning
 │   ├── strict-evidence.md        every claim needs a file:line or shell citation
 │   └── preflight-required.md     preflight-check.sh must pass before pipeline starts
-├── scripts/              3 utility scripts
+├── scripts/              4 utility scripts
 │   ├── preflight-check.sh        verifies tools + target dir, outputs JSON
 │   ├── verify-strings.sh         binary string search wrapper
-│   └── extract-license-headers.py  license header extractor (JSON output)
+│   ├── extract-license-headers.py  license header extractor (JSON output)
+│   └── select-target.js            interactive TUI — audit target + scan mode → JSON
 └── skills/               4 knowledge modules
     ├── dependency-tracing.md       2-phase dep graph workflow
     ├── c-cpp-linkage-audit.md      .lib/.dll/.a/.so compliance implications
