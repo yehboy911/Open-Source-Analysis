@@ -36,7 +36,7 @@ framework/
 │   ├── preflight-check.sh        # verifies python3, strings, 3 Python tools, target dir
 │   ├── verify-strings.sh         # wraps strings(1) with regex match; returns MATCH_FOUND/NO_MATCH
 │   ├── extract-license-headers.py # scans first 50 lines of a file for license headers; outputs JSON
-│   └── select-target.js           # interactive TUI menu for audit target + scan mode selection; outputs JSON
+│   └── select-target.js           # interactive TUI — audit target + scan mode → JSON (user-facing only; never invoke from agents)
 └── skills/
     ├── dependency-tracing.md       # 2-phase dep graph workflow
     ├── c-cpp-linkage-audit.md      # .lib/.dll/.a/.so classification

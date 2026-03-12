@@ -16,7 +16,7 @@ A Claude Code agentic pipeline for auditing open-source license compliance in C/
 
 - Claude Code installed and running
 - Python 3.8+
-- Node.js 14+
+- Node.js 14+ (required for `select-target.js` interactive target selector)
 - `strings` command (macOS/Linux standard; included in Xcode command-line tools)
 - The three Python audit tools (install with pipx or use fallback paths):
 
