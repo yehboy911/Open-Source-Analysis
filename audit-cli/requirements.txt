@@ -1,0 +1,2 @@
+# No external Python dependencies — stdlib only.
+# External tools (boost-scanner, sbom-checker, osc-evidence) are installed separately.
