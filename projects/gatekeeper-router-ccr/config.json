@@ -1,0 +1,48 @@
+{
+  "APIKEY": "gatekeeper-internal",
+  "HOST": "127.0.0.1",
+  "PORT": 3001,
+  "LOG": true,
+  "LOG_LEVEL": "info",
+  "API_TIMEOUT_MS": 120000,
+  "CUSTOM_ROUTER_PATH": "/Users/OwenYeh/Claude-workspace/projects/gatekeeper-router-ccr/custom-router.js",
+
+  "MODEL_ECONOMY":  "$COPILOT_MODEL_ECONOMY",
+  "MODEL_BALANCED": "$COPILOT_MODEL_BALANCED",
+  "MODEL_PREMIUM":  "$COPILOT_MODEL_PREMIUM",
+  "FORCE_PREMIUM":  "$FORCE_PREMIUM",
+  "FORCE_ECONOMY":  "$FORCE_ECONOMY",
+  "CLASSIFIER_ENABLED": "$CLASSIFIER_ENABLED",
+
+  "transformers": [
+    { "path": "/Users/OwenYeh/Claude-workspace/projects/gatekeeper-router-ccr/plugins/copilot-transformer.js" }
+  ],
+
+  "Providers": [
+    {
+      "name": "copilot-economy",
+      "api_base_url": "https://api.githubcopilot.com/chat/completions",
+      "api_key": "$COPILOT_CHAT_TOKEN",
+      "models": ["gpt-4o-mini", "gpt-5-mini"],
+      "transformer": { "use": ["CopilotAuth"] }
+    },
+    {
+      "name": "copilot-balanced",
+      "api_base_url": "https://api.githubcopilot.com/chat/completions",
+      "api_key": "$COPILOT_CHAT_TOKEN",
+      "models": ["gemini-3-flash-preview", "gemini-2.0-flash-001"],
+      "transformer": { "use": ["CopilotAuth"] }
+    },
+    {
+      "name": "copilot-premium",
+      "api_base_url": "https://api.githubcopilot.com/chat/completions",
+      "api_key": "$COPILOT_CHAT_TOKEN",
+      "models": ["claude-sonnet-4-5", "claude-sonnet-4.6", "claude-3-5-sonnet"],
+      "transformer": { "use": ["CopilotAuth"] }
+    }
+  ],
+
+  "Router": {
+    "default": "copilot-balanced,gemini-3-flash-preview"
+  }
+}

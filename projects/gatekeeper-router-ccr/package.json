@@ -1,0 +1,15 @@
+{
+  "name": "gatekeeper-router-ccr",
+  "version": "0.1.0",
+  "private": true,
+  "main": "sidecar-dashboard.js",
+  "scripts": {
+    "start": "node sidecar-dashboard.js",
+    "ccr": "ccr start",
+    "check": "node -e \"require('./custom-router.js'); require('./plugins/copilot-transformer.js')\" && echo OK"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.0",
+    "express": "^5.2.1"
+  }
+}

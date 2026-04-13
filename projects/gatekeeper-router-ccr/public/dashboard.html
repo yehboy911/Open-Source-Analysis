@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gatekeeper CCR Dashboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e2e8f0; padding: 24px; }
+    h1 { font-size: 1.25rem; font-weight: 600; margin-bottom: 20px; color: #94a3b8; letter-spacing: 0.05em; text-transform: uppercase; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .card { background: #1e2330; border-radius: 12px; padding: 20px; border: 1px solid #2d3748; }
+    .card h2 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 12px; }
+    .big-number { font-size: 2.5rem; font-weight: 700; line-height: 1; }
+    .sub { font-size: 0.85rem; color: #64748b; margin-top: 4px; }
+    .progress-bar { height: 8px; background: #2d3748; border-radius: 4px; overflow: hidden; margin-top: 12px; }
+    .progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    .green { color: #4ade80; } .yellow { color: #facc15; } .red { color: #f87171; }
+    .fill-green { background: #4ade80; } .fill-yellow { background: #facc15; } .fill-red { background: #f87171; }
+    /* sparkline */
+    svg.spark { width: 100%; height: 60px; margin-top: 12px; }
+    svg.spark line { stroke: #4ade80; stroke-width: 2; }
+    svg.spark circle { fill: #4ade80; }
+    /* tier bars */
+    .tier-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+    .tier-label { width: 64px; font-size: 0.75rem; color: #94a3b8; }
+    .tier-bar-wrap { flex: 1; background: #2d3748; border-radius: 3px; height: 10px; overflow: hidden; }
+    .tier-bar-fill { height: 100%; border-radius: 3px; }
+    .tier-pct { width: 36px; text-align: right; font-size: 0.75rem; color: #64748b; }
+    .economy-fill { background: #60a5fa; }
+    .balanced-fill { background: #4ade80; }
+    .premium-fill { background: #c084fc; }
+    .footer { margin-top: 20px; font-size: 0.75rem; color: #374151; text-align: right; }
+  </style>
+</head>
+<body>
+  <h1>Gatekeeper Router — CCR v2.0.0</h1>
+  <div class="grid">
+    <!-- Card 1: Quota Usage -->
+    <div class="card">
+      <h2>Monthly Quota Usage</h2>
+      <div id="quota-num" class="big-number green">—</div>
+      <div id="quota-sub" class="sub">loading…</div>
+      <div class="progress-bar"><div id="quota-fill" class="progress-fill fill-green" style="width:0%"></div></div>
+    </div>
+
+    <!-- Card 2: Daily Burn Rate (7-day sparkline) -->
+    <div class="card">
+      <h2>Daily Burn Rate (last 7 days)</h2>
+      <div id="burn-total" class="sub">loading…</div>
+      <svg class="spark" id="spark" viewBox="0 0 260 60" preserveAspectRatio="none"></svg>
+    </div>
+
+    <!-- Card 3: Tier Distribution -->
+    <div class="card">
+      <h2>Tier Distribution (last 500 req)</h2>
+      <div class="tier-row">
+        <span class="tier-label">ECONOMY</span>
+        <div class="tier-bar-wrap"><div id="bar-e" class="tier-bar-fill economy-fill" style="width:0%"></div></div>
+        <span id="pct-e" class="tier-pct">0%</span>
+      </div>
+      <div class="tier-row">
+        <span class="tier-label">BALANCED</span>
+        <div class="tier-bar-wrap"><div id="bar-b" class="tier-bar-fill balanced-fill" style="width:0%"></div></div>
+        <span id="pct-b" class="tier-pct">0%</span>
+      </div>
+      <div class="tier-row">
+        <span class="tier-label">PREMIUM</span>
+        <div class="tier-bar-wrap"><div id="bar-p" class="tier-bar-fill premium-fill" style="width:0%"></div></div>
+        <span id="pct-p" class="tier-pct">0%</span>
+      </div>
+    </div>
+  </div>
+  <div class="footer" id="updated">—</div>
+
+  <script>
+    function colorClass(pct) {
+      if (pct < 50) return 'green';
+      if (pct < 80) return 'yellow';
+      return 'red';
+    }
+    function fillClass(pct) {
+      if (pct < 50) return 'fill-green';
+      if (pct < 80) return 'fill-yellow';
+      return 'fill-red';
+    }
+
+    function renderSpark(data) {
+      const svg   = document.getElementById('spark');
+      svg.innerHTML = '';
+      const max   = Math.max(...data, 1);
+      const W = 260, H = 60, pad = 4;
+      const step  = (W - pad * 2) / (data.length - 1);
+      const pts   = data.map((v, i) => [pad + i * step, H - pad - ((v / max) * (H - pad * 2))]);
+      for (let i = 0; i < pts.length - 1; i++) {
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', pts[i][0]); line.setAttribute('y1', pts[i][1]);
+        line.setAttribute('x2', pts[i+1][0]); line.setAttribute('y2', pts[i+1][1]);
+        svg.appendChild(line);
+      }
+      pts.forEach(([x, y]) => {
+        const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', 3);
+        svg.appendChild(c);
+      });
+    }
+
+    async function poll() {
+      try {
+        const r = await fetch('/v1/metrics');
+        if (!r.ok) return;
+        const d = await r.json();
+
+        // Card 1 — Quota
+        const pct  = d.quota_pct;
+        const cls  = colorClass(pct);
+        const fill = fillClass(pct);
+        const qNum = document.getElementById('quota-num');
+        qNum.textContent = d.quota_used.toFixed(1);
+        qNum.className   = 'big-number ' + cls;
+        document.getElementById('quota-sub').textContent = `of ${d.quota_limit} premium units (${pct}%)`;
+        const qf = document.getElementById('quota-fill');
+        qf.style.width = pct + '%';
+        qf.className   = 'progress-fill ' + fill;
+
+        // Card 2 — Sparkline
+        const burn = d.daily_burn;
+        const sum7 = burn.reduce((a, b) => a + b, 0).toFixed(1);
+        document.getElementById('burn-total').textContent = `7-day total: ${sum7} units`;
+        renderSpark(burn);
+
+        // Card 3 — Tier distribution
+        const td    = d.tier_distribution;
+        const total = (td.ECONOMY + td.BALANCED + td.PREMIUM) || 1;
+        const pE = Math.round(td.ECONOMY  / total * 100);
+        const pB = Math.round(td.BALANCED / total * 100);
+        const pP = Math.round(td.PREMIUM  / total * 100);
+        document.getElementById('bar-e').style.width = pE + '%';
+        document.getElementById('bar-b').style.width = pB + '%';
+        document.getElementById('bar-p').style.width = pP + '%';
+        document.getElementById('pct-e').textContent = pE + '%';
+        document.getElementById('pct-b').textContent = pB + '%';
+        document.getElementById('pct-p').textContent = pP + '%';
+
+        document.getElementById('updated').textContent = 'Updated: ' + new Date().toLocaleTimeString();
+      } catch (e) {
+        document.getElementById('updated').textContent = 'Error: ' + e.message;
+      }
+    }
+
+    poll();
+    setInterval(poll, 5000);
+  </script>
+</body>
+</html>
